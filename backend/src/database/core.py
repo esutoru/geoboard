@@ -1,3 +1,4 @@
+from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy.orm import sessionmaker
@@ -5,7 +6,16 @@ from sqlalchemy.orm import sessionmaker
 from backend.src.config import settings
 from backend.src.database.utils import resolve_table_name
 
-engine = create_async_engine(settings.SQLALCHEMY_DATABASE_URI, future=True, echo=True)
+url_object = URL.create(
+    "postgresql+asyncpg",
+    username=settings.DATABASE_USER,
+    password=settings.DATABASE_PASSWORD,
+    host=settings.DATABASE_HOST,
+    port=settings.DATABASE_PORT,
+    database=settings.DATABASE_NAME,
+)
+
+engine = create_async_engine(url_object, future=True, echo=True)
 async_session = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
 
 

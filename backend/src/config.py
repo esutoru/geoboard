@@ -9,7 +9,11 @@ class Settings(BaseSettings):
     JWT_AUTH_SECRET_KEY: str
     JWT_AUTH_TOKEN_EXPIRY: int = 14 * 24 * 60 * 60
 
-    SQLALCHEMY_DATABASE_URI: str
+    DATABASE_NAME: str
+    DATABASE_USER: str
+    DATABASE_PASSWORD: str
+    DATABASE_HOST: str
+    DATABASE_PORT: int
 
     class Config:
         case_sensitive = True
