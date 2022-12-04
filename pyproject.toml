@@ -16,6 +16,12 @@ name = "geoboard"
 version = "0.1.0"
 description = ""
 authors = ["esutoru"]
+packages = [
+    { include = "backend" },
+]
+
+[tool.poetry.scripts]
+cli = "backend.src.cli:app"
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -30,6 +36,7 @@ pydantic = {extras = ["dotenv", "email"], version = "^1.10.2"}
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 asyncpg = "^0.27.0"
+typer = {extras = ["all"], version = "^0.7.0"}
 
 [tool.poetry.dev-dependencies]
 

@@ -15,13 +15,16 @@ url_object = URL.create(
     database=settings.DATABASE_NAME,
 )
 
-engine = create_async_engine(url_object, future=True, echo=True)
-async_session = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
+engine = create_async_engine(url_object, future=True, echo=False)
+async_session = sessionmaker(bind=engine, class_=AsyncSession)
 
 
 @as_declarative()
 class Base:
     __name__: str
+
+    def __init__(self, *args: object, **kwargs: object):
+        pass
 
     @declared_attr
     def __tablename__(self) -> str:
