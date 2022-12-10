@@ -43,11 +43,11 @@ pre-commit install
 ```
 cli run server
 ```
-You can check additional information about this commend if you add `--help` flag
+You can get additional information about this command if you add `--help` flag
 
 ## API documentation
 
-Run project and open http://127.0.0.1:8000/api/v1/docs to see list of project endpoints
+Run project and open http://127.0.0.1:8000/api/v1/docs to see list of available endpoints
 
 ## Commands
 
