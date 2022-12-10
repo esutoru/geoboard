@@ -7,7 +7,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from backend.src.config import settings
-from backend.src.database.core import Base
+from backend.src.database.core import Base, url_object
 from backend.src.users.models import User
 
 # this is the Alembic Config object, which provides
@@ -19,7 +19,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option("sqlalchemy.url", settings.SQLALCHEMY_DATABASE_URI)
+config.set_main_option("sqlalchemy.url", url_object.render_as_string(hide_password=False))
 
 target_metadata = Base.metadata
 
