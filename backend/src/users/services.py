@@ -11,6 +11,12 @@ async def get(*, db_session: AsyncSession, user_id: int) -> User | None:
     return result.scalars().one_or_none()
 
 
+async def get_by_email(*, db_session: AsyncSession, email: str) -> User | None:
+    """Returns a user object based on user email."""
+    result = await db_session.execute(select(User).filter(User.email == email))
+    return result.scalars().one_or_none()
+
+
 async def create(*, db_session: AsyncSession, data: UserRegistrationSchema) -> User | None:
     """Create new user instance in db."""
     user = User(email=data.email, password=data.password, is_active=data.is_active)
@@ -18,9 +24,3 @@ async def create(*, db_session: AsyncSession, data: UserRegistrationSchema) -> U
     await db_session.commit()
     await db_session.refresh(user)
     return user
-
-
-async def get_by_email(*, db_session: AsyncSession, email: str) -> User | None:
-    """Returns a user object based on user email."""
-    result = await db_session.execute(select(User).filter(User.email == email))
-    return result.scalars().one_or_none()

@@ -4,7 +4,7 @@ from rich import print
 
 from backend.common.async_utils import async_to_sync
 from backend.src.auth.security import get_password_hash
-from backend.src.database.core import async_session
+from backend.src.database.core import async_session, engine
 from backend.src.users import services as user_service
 from backend.src.users.schemas import UserRegistrationSchema, UserSchema
 
@@ -21,6 +21,8 @@ async def _validate_email(value: str) -> str:
     async with async_session() as session:
         if await user_service.get_by_email(db_session=session, email=value):
             raise typer.BadParameter(f"User with email {value} already exists")
+    await engine.dispose()
+
     return value
 
 
