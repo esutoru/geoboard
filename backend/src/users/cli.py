@@ -36,11 +36,21 @@ def _validate_password(value: str) -> str:
 @async_to_sync
 async def create(
     email: str = typer.Option(..., prompt=True, callback=_validate_email),
+    first_name: str = typer.Option(..., prompt=True, min=1, max=20),
+    last_name: str = typer.Option(..., prompt=True, min=1, max=20),
     password: str = typer.Option(
         ..., prompt=True, confirmation_prompt=True, hide_input=True, callback=_validate_password
     ),
 ) -> None:
-    data = UserRegistrationSchema(email=email, password=get_password_hash(password), is_active=True)
+    """Create new user."""
+
+    data = UserRegistrationSchema(
+        email=email,
+        password=get_password_hash(password),
+        is_active=True,
+        first_name=first_name,
+        last_name=last_name,
+    )
     async with async_session() as session:
         user = await user_service.create(db_session=session, data=data)
 
