@@ -1,4 +1,4 @@
-from pydantic import BaseSettings
+from pydantic import AnyHttpUrl, BaseSettings, validator
 
 
 class Settings(BaseSettings):
@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     DATABASE_PASSWORD: str
     DATABASE_HOST: str
     DATABASE_PORT: int
+
+    BACKEND_CORS_ORIGINS: list[AnyHttpUrl] = []
 
     class Config:
         case_sensitive = True
