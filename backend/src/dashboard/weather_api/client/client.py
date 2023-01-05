@@ -5,7 +5,7 @@ from aiohttp import ClientSession
 
 from .api import HttpClient
 from .exceptions import WeatherApiException
-from .types import WeatherApiLocation
+from .types import WeatherApiForecast, WeatherApiLocation
 
 
 class WeatherApiClient:
@@ -26,6 +26,15 @@ class WeatherApiClient:
     async def search_location(self, query: str) -> list[WeatherApiLocation]:
         """Returns matching cities and towns as an array."""
         response = await self._http_client.get("search.json", params={"q": query})
+        if response.ok:
+            return response.data
+        raise WeatherApiException()
+
+    async def get_location_forecast(self, location: str, days: int) -> WeatherApiForecast:
+        """Returns matching cities and towns as an array."""
+        response = await self._http_client.get(
+            "forecast.json", params={"q": location, "days": days}
+        )
         if response.ok:
             return response.data
         raise WeatherApiException()

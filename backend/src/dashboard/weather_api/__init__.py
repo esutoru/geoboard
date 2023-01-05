@@ -1,1 +1,1 @@
-from .utils import search_location
+from .utils import get_location_forecast, search_location

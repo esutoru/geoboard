@@ -17,3 +17,42 @@ class LocationSchema(BaseModel):
     region: str
     country: str
     code: str
+
+
+class DashboardLocationSchema(BaseModel):
+    name: str
+    region: str
+    country: str
+    date: str
+    time: str
+    day_of_week: str
+
+
+class DashboardTemperatureSchema(BaseModel):
+    celsius: float
+    fahrenheit: float
+
+
+class DashboardConditionSchema(BaseModel):
+    status: str
+    icon: str
+
+
+class DashboardDayForecastTemperatureSchema(BaseModel):
+    max: DashboardTemperatureSchema
+    min: DashboardTemperatureSchema
+
+
+class DashboardDayForecastSchema(BaseModel):
+    date: str
+    day_of_week: str
+    temperature: DashboardDayForecastTemperatureSchema
+    condition: DashboardConditionSchema
+
+
+class DashboardSchema(BaseModel):
+    temperature_scale: str
+    location: DashboardLocationSchema
+    temperature: DashboardTemperatureSchema
+    condition: DashboardConditionSchema
+    forecast: list[DashboardDayForecastSchema]
