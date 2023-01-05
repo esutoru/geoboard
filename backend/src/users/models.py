@@ -1,7 +1,13 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy.orm import Mapped, relationship
 
 from backend.src.database.core import Base
 from backend.src.database.mixins import TimeStampMixin
+
+if TYPE_CHECKING:
+    from backend.src.dashboard.models import Dashboard
 
 
 class User(Base, TimeStampMixin):
@@ -13,3 +19,5 @@ class User(Base, TimeStampMixin):
 
     password: str = Column(String, nullable=False)
     is_active: bool = Column(Boolean, default=True)
+
+    dashboard: Mapped["Dashboard"] = relationship("Dashboard", back_populates="user", uselist=False)

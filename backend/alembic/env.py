@@ -6,7 +6,7 @@ from sqlalchemy import engine_from_config, pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from backend.src.config import settings
+from backend.src.dashboard.models import Dashboard
 from backend.src.database.core import Base, url_object
 from backend.src.users.models import User
 

@@ -20,6 +20,8 @@ class Settings(BaseSettings):
 
     BACKEND_CORS_ORIGINS: list[AnyHttpUrl] = []
 
+    DEFAULT_DASHBOARD_LOCATION = "moscow-moscow-city-russia"
+
     class Config:
         case_sensitive = True
         env_file = ".env"

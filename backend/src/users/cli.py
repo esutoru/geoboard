@@ -4,6 +4,7 @@ from rich import print
 
 from backend.common.async_utils import async_to_sync
 from backend.src.auth.security import get_password_hash
+from backend.src.dashboard import services as dashboard_service
 from backend.src.database.core import async_session, engine
 from backend.src.users import services as user_service
 from backend.src.users.schemas import UserRegistrationSchema, UserSchema
@@ -53,6 +54,10 @@ async def create(
     )
     async with async_session() as session:
         user = await user_service.create(db_session=session, data=data)
+        if user:
+            await dashboard_service.create(db_session=session, user_id=user.id)
+            await session.commit()
+            await session.refresh(user)
 
     print("New user successfully created! :tada:")
     print(UserSchema.from_orm(user).dict())
