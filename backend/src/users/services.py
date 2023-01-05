@@ -21,7 +21,7 @@ async def get_by_email(*, db_session: AsyncSession, email: str) -> User | None:
     return result.scalars().one_or_none()
 
 
-async def create(*, db_session: AsyncSession, data: UserRegistrationSchema) -> User | None:
+async def create(*, db_session: AsyncSession, data: UserRegistrationSchema) -> User:
     """Create new user instance in db."""
     user = User(
         email=data.email,
