@@ -41,7 +41,7 @@ pre-commit install
 
 ## Run project
 ```
-cli run server
+cli run-server
 ```
 You can get additional information about this command if you add `--help` flag
 

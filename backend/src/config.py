@@ -1,4 +1,4 @@
-from pydantic import AnyHttpUrl, BaseSettings, validator
+from pydantic import AnyHttpUrl, BaseSettings
 
 
 class Settings(BaseSettings):
@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     DATABASE_PASSWORD: str
     DATABASE_HOST: str
     DATABASE_PORT: int
+
+    WEATHER_API_URL: str
+    WEATHER_API_KEY: str
 
     BACKEND_CORS_ORIGINS: list[AnyHttpUrl] = []
 

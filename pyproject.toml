@@ -37,6 +37,7 @@ python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 asyncpg = "^0.27.0"
 typer = {extras = ["all"], version = "^0.7.0"}
+aiohttp = "^3.8.3"
 
 [tool.poetry.dev-dependencies]
 
