@@ -24,6 +24,8 @@ class WeatherApiForecastCurrent(TypedDict):
     temp_c: float
     temp_f: int
     condition: WeatherApiForecastCurrentCondition
+    uv: float
+    wind_kph: float
 
 
 class WeatherApiForecastForecastForecastDayDay(TypedDict):

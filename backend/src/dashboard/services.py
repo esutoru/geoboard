@@ -1,5 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from backend.src.config import settings
 from backend.src.dashboard.models import Dashboard, Widget
@@ -8,7 +9,11 @@ from backend.src.dashboard.schemas import WidgetIn
 
 async def get_by_user_id(*, db_session: AsyncSession, user_id: int) -> Dashboard | None:
     """Returns a dashboard object based on user id."""
-    result = await db_session.execute(select(Dashboard).filter(Dashboard.user_id == user_id))
+    result = await db_session.execute(
+        select(Dashboard)
+        .filter(Dashboard.user_id == user_id)
+        .options(selectinload(Dashboard.widgets))
+    )
     return result.scalars().one_or_none()
 
 

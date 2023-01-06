@@ -1,4 +1,5 @@
 from typing import TypedDict
+from uuid import UUID
 
 
 class Location(TypedDict):
@@ -39,9 +40,23 @@ class DayForecast(TypedDict):
     condition: ForecastCondition
 
 
+class ForecastWidget(TypedDict):
+    uuid: UUID
+    widget_type: str
+
+    x: int
+    y: int
+
+    width: int
+    height: int
+
+    data: dict
+
+
 class Forecast(TypedDict):
     temperature_scale: str
     location: ForecastLocation
     temperature: ForecastTemperature
     condition: ForecastCondition
     forecast: list[DayForecast]
+    widgets: list[ForecastWidget]
