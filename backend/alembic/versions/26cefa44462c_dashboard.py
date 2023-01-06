@@ -1,8 +1,8 @@
 """dashboard
 
-Revision ID: 69c8f53d7605
+Revision ID: 26cefa44462c
 Revises: 366e560ea3ed
-Create Date: 2023-01-05 21:02:12.077550
+Create Date: 2023-01-06 20:22:58.054631
 
 """
 from typing import Any
@@ -13,7 +13,7 @@ from sqlalchemy import orm
 from sqlalchemy.sql import column, insert, table
 
 # revision identifiers, used by Alembic.
-revision = "69c8f53d7605"
+revision = "26cefa44462c"
 down_revision = "366e560ea3ed"
 branch_labels = None
 depends_on = None
@@ -25,11 +25,7 @@ def upgrade() -> None:
         "dashboard",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("location", sa.String(), nullable=False),
-        sa.Column(
-            "temperature_scale",
-            sa.Enum("celsius", "fahrenheit", name="temperaturescale"),
-            nullable=False,
-        ),
+        sa.Column("temperature_scale", sa.String(), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_id"],
