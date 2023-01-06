@@ -40,6 +40,7 @@ class DayForecast(TypedDict):
 
 
 class Forecast(TypedDict):
+    temperature_scale: str
     location: ForecastLocation
     temperature: ForecastTemperature
     condition: ForecastCondition

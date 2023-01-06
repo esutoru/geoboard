@@ -19,10 +19,12 @@ async def _validate_email(value: str) -> str:
     except EmailError as exc:
         raise typer.BadParameter(exc.msg_template)
 
-    async with async_session() as session:
-        if await user_service.get_by_email(db_session=session, email=value):
-            raise typer.BadParameter(f"User with email {value} already exists")
-    await engine.dispose()
+    try:
+        async with async_session() as session:
+            if await user_service.get_by_email(db_session=session, email=value):
+                raise typer.BadParameter(f"User with email {value} already exists")
+    finally:
+        await engine.dispose()
 
     return value
 

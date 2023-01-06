@@ -25,8 +25,9 @@ def parse_location(data: WeatherApiLocation) -> Location:
     }
 
 
-def parse_forecast(data: WeatherApiForecast) -> Forecast:
+def parse_forecast(data: WeatherApiForecast, temperature_scale: str) -> Forecast:
     return {
+        "temperature_scale": temperature_scale,
         "location": _parse_forecast_location(data),
         "temperature": _parse_forecast_temperature(data),
         "condition": _parse_forecast_condition(data),

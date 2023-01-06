@@ -35,10 +35,7 @@ router = APIRouter(
 async def dashboard(data: Dashboard = Depends(get_current_user_dashboard)) -> Any:
     """Returns weather data for current dashboard settings."""
     try:
-        return {
-            "temperature_scale": data.temperature_scale.name,
-            **(await weather_api.get_location_forecast(data.location)),
-        }
+        return await weather_api.get_location_forecast(data.location, data.temperature_scale)
     except WeatherApiException:
         raise WeatherApiHttpException()
 

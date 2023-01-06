@@ -4,7 +4,6 @@ from backend.common.schema.partial import convert_to_optional
 
 
 class UserSchema(BaseModel):
-    id: int
     email: EmailStr
     first_name: str
     last_name: str
