@@ -4,34 +4,29 @@ from datetime import datetime
 from dateutil.parser import ParserError
 from dateutil.parser import parse as parse_date
 
-from .client.exceptions import WeatherApiException
-from .client.types import WeatherApiForecast, WeatherApiLocation
-from .types import (
+from ...models import Widget
+from ..client.exceptions import WeatherApiException
+from ..client.types import WeatherApiForecast
+from ..types import (
     DayForecast,
     Forecast,
     ForecastCondition,
     ForecastLocation,
     ForecastTemperature,
-    Location,
 )
+from .widget import parse_widget
 
 
-def parse_location(data: WeatherApiLocation) -> Location:
-    return {
-        "name": data["name"],
-        "region": data["region"],
-        "country": data["country"],
-        "code": data["url"],
-    }
-
-
-def parse_forecast(data: WeatherApiForecast, temperature_scale: str) -> Forecast:
+def parse_forecast(
+    data: WeatherApiForecast, temperature_scale: str, widgets: list[Widget]
+) -> Forecast:
     return {
         "temperature_scale": temperature_scale,
         "location": _parse_forecast_location(data),
         "temperature": _parse_forecast_temperature(data),
         "condition": _parse_forecast_condition(data),
         "forecast": _parse_forecast(data),
+        "widgets": [parse_widget(data, widget) for widget in widgets],
     }
 
 
