@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from pydantic.schema import UUID
 
 from backend.src.dashboard.types import WidgetTypes
 
@@ -65,9 +66,23 @@ class DashboardDayForecastSchema(BaseModel):
     condition: DashboardConditionSchema
 
 
+class WidgetSchema(BaseModel):
+    uuid: UUID
+    widget_type: str
+
+    x: int
+    y: int
+
+    width: int
+    height: int
+
+    data: dict
+
+
 class DashboardSchema(BaseModel):
     temperature_scale: str
     location: DashboardLocationSchema
     temperature: DashboardTemperatureSchema
     condition: DashboardConditionSchema
     forecast: list[DashboardDayForecastSchema]
+    widgets: list[WidgetSchema]

@@ -26,6 +26,8 @@ class WeatherApiForecastCurrent(TypedDict):
     condition: WeatherApiForecastCurrentCondition
     uv: float
     wind_kph: float
+    humidity: int
+    vis_km: float
 
 
 class WeatherApiForecastForecastForecastDayDay(TypedDict):
@@ -36,9 +38,15 @@ class WeatherApiForecastForecastForecastDayDay(TypedDict):
     condition: WeatherApiForecastCurrentCondition
 
 
+class WeatherApiForecastForecastForecastDayAstro(TypedDict):
+    sunrise: str
+    sunset: str
+
+
 class WeatherApiForecastForecastForecastDay(TypedDict):
     date: str
     day: WeatherApiForecastForecastForecastDayDay
+    astro: WeatherApiForecastForecastForecastDayAstro
 
 
 class WeatherApiForecastForecast(TypedDict):

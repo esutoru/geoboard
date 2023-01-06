@@ -18,6 +18,7 @@ from .schemas import (
     LocationSchema,
     SearchLocationIn,
     WidgetIn,
+    WidgetSchema,
 )
 from .weather_api.client.exceptions import WeatherApiException
 
@@ -33,7 +34,7 @@ router = APIRouter(
 
 @router.get(
     "/",
-    # response_model=DashboardSchema,
+    response_model=DashboardSchema,
     dependencies=[Depends(PermissionsDependency([IsAuthenticated]))],
 )
 async def dashboard(user_dashboard: Dashboard = Depends(get_current_user_dashboard)) -> Any:
@@ -62,6 +63,7 @@ async def search_location(data: SearchLocationIn) -> Any:
 
 @router.post(
     "/widget",
+    response_model=WidgetSchema,
     dependencies=[Depends(PermissionsDependency([IsAuthenticated]))],
 )
 async def add_widget(
@@ -71,8 +73,9 @@ async def add_widget(
 ) -> Any:
     """Add new widget."""
 
+    location = user_dashboard.location
     widget = await dashboard_services.create_widget(
         db_session=db_session, dashboard_id=user_dashboard.id, data=data
     )
 
-    return {"uuid": widget.uuid}
+    return await weather_api.get_widget_data(location, widget)

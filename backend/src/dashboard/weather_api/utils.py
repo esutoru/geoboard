@@ -2,8 +2,8 @@ from backend.src.config import settings
 
 from ..models import Widget
 from .client.client import WeatherApiClient
-from .parsers import parse_forecast, parse_location
-from .types import Forecast, Location
+from .parsers import parse_forecast, parse_location, parse_widget
+from .types import Forecast, ForecastWidget, Location
 
 
 def get_client() -> WeatherApiClient:
@@ -23,3 +23,8 @@ async def get_location_forecast(
         return parse_forecast(
             await client.get_location_forecast(location, days=8), temperature_scale, widgets
         )
+
+
+async def get_widget_data(location: str, widget: Widget) -> ForecastWidget:
+    async with get_client() as client:
+        return parse_widget((await client.get_location_forecast(location, days=1)), widget)
