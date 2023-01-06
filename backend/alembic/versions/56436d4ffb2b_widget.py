@@ -1,8 +1,8 @@
 """widget
 
-Revision ID: ce4073e334a7
+Revision ID: 56436d4ffb2b
 Revises: 26cefa44462c
-Create Date: 2023-01-06 21:33:44.072103
+Create Date: 2023-01-06 22:32:38.770062
 
 """
 import sqlalchemy as sa
@@ -10,7 +10,7 @@ from alembic import op
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = "ce4073e334a7"
+revision = "56436d4ffb2b"
 down_revision = "26cefa44462c"
 branch_labels = None
 depends_on = None
@@ -21,7 +21,7 @@ def upgrade() -> None:
     op.create_table(
         "widget",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("uuid", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("uuid", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("dashboard_id", sa.Integer(), nullable=True),
         sa.Column("widget_type", sa.String(), nullable=False),
         sa.Column("x", sa.Integer(), nullable=False),
@@ -32,7 +32,7 @@ def upgrade() -> None:
             ["dashboard_id"],
             ["dashboard.id"],
         ),
-        sa.PrimaryKeyConstraint("id", "uuid"),
+        sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("uuid"),
     )
     op.create_index(op.f("ix_widget_id"), "widget", ["id"], unique=False)

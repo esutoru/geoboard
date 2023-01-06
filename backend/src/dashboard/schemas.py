@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
 
+from backend.src.dashboard.types import WidgetTypes
+
 
 class ExternalServiceNotAvailable(BaseModel):
     detail: str
@@ -7,6 +9,19 @@ class ExternalServiceNotAvailable(BaseModel):
 
 class SearchLocationIn(BaseModel):
     query: str = Field(min_length=3, max_length=30)
+
+    class Config:
+        orm_mode = True
+
+
+class WidgetIn(BaseModel):
+    widget_type: WidgetTypes
+
+    x: int
+    y: int
+
+    width: int
+    height: int
 
     class Config:
         orm_mode = True

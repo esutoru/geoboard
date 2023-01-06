@@ -28,7 +28,8 @@ class Dashboard(Base):
 
 class Widget(Base):
     id: Mapped[int] = Column(Integer, primary_key=True, index=True)
-    uuid = Column(UUID(as_uuid=True), primary_key=True, unique=True, default=uuid4)
+
+    uuid = Column(UUID(as_uuid=True), unique=True, default=uuid4)
 
     dashboard_id: Mapped[int] = Column(Integer, ForeignKey("dashboard.id"))
     dashboard: Mapped["Dashboard"] = relationship("Dashboard", back_populates="widgets")

@@ -1,10 +1,13 @@
 from typing import Any
 
 from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.auth.permission import IsAuthenticated
 from backend.src.permissions.dependencies import PermissionsDependency
 
+from ..database.dependencies import get_db
+from . import services as dashboard_services
 from . import weather_api
 from .dependencies import get_current_user_dashboard
 from .exceptions import WeatherApiHttpException
@@ -14,6 +17,7 @@ from .schemas import (
     ExternalServiceNotAvailable,
     LocationSchema,
     SearchLocationIn,
+    WidgetIn,
 )
 from .weather_api.client.exceptions import WeatherApiException
 
@@ -51,3 +55,21 @@ async def search_location(data: SearchLocationIn) -> Any:
         return await weather_api.search_location(data.query)
     except WeatherApiException:
         raise WeatherApiHttpException()
+
+
+@router.post(
+    "/widget",
+    dependencies=[Depends(PermissionsDependency([IsAuthenticated]))],
+)
+async def add_widget(
+    data: WidgetIn,
+    db_session: AsyncSession = Depends(get_db),
+    user_dashboard: Dashboard = Depends(get_current_user_dashboard),
+) -> Any:
+    """Add new widget."""
+
+    widget = await dashboard_services.create_widget(
+        db_session=db_session, dashboard_id=user_dashboard.id, data=data
+    )
+
+    return {"uuid": widget.uuid}
