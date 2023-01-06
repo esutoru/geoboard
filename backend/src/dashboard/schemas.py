@@ -8,6 +8,10 @@ class ExternalServiceNotAvailable(BaseModel):
     detail: str
 
 
+class WidgetDoesNotFound(BaseModel):
+    detail: str
+
+
 class SearchLocationIn(BaseModel):
     query: str = Field(min_length=3, max_length=30)
 

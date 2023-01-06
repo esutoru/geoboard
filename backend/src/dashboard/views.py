@@ -1,6 +1,7 @@
 from typing import Any
+from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.auth.permission import IsAuthenticated
@@ -17,6 +18,7 @@ from .schemas import (
     ExternalServiceNotAvailable,
     LocationSchema,
     SearchLocationIn,
+    WidgetDoesNotFound,
     WidgetIn,
     WidgetSchema,
 )
@@ -79,3 +81,20 @@ async def add_widget(
     )
 
     return await weather_api.get_widget_data(location, widget)
+
+
+@router.delete(
+    "/widget/{uuid}",
+    dependencies=[Depends(PermissionsDependency([IsAuthenticated]))],
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={404: {"model": WidgetDoesNotFound, "description": "Widget doesn't found."}},
+)
+async def delete_widget(db_session: AsyncSession = Depends(get_db), uuid: UUID = Path(...)) -> None:
+    """Add new widget."""
+
+    if await dashboard_services.get_widget_by_uuid(db_session=db_session, uuid=uuid) is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Widget with uuid {uuid} doesn't found."
+        )
+
+    await dashboard_services.delete_widget_by_uuid(db_session=db_session, uuid=uuid)
