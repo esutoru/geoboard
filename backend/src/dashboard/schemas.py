@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from pydantic.schema import UUID
 
+from backend.common.schema.partial import convert_to_optional
 from backend.src.dashboard.types import WidgetTypes
 
 
@@ -19,7 +20,7 @@ class SearchLocationIn(BaseModel):
         orm_mode = True
 
 
-class WidgetIn(BaseModel):
+class WidgetCreateSchema(BaseModel):
     widget_type: WidgetTypes
 
     x: int
@@ -30,6 +31,21 @@ class WidgetIn(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class WidgetUpdateSchema(BaseModel):
+    x: int
+    y: int
+
+    width: int
+    height: int
+
+    class Config:
+        orm_mode = True
+
+
+class WidgetPartialUpdateSchema(WidgetUpdateSchema):
+    __annotations__ = convert_to_optional(WidgetUpdateSchema)
 
 
 class LocationSchema(BaseModel):

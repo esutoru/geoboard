@@ -37,7 +37,7 @@ async def create(*, db_session: AsyncSession, data: UserRegistrationSchema) -> U
 
 
 async def update(*, db_session: AsyncSession, user: User, data: UserUpdateSchema) -> User:
-    """Create existed user instance in db."""
+    """Update existed user instance in db."""
     update_data = data.dict(exclude_unset=True)
     if not update_data:
         return user

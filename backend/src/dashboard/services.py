@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 
 from backend.src.config import settings
 from backend.src.dashboard.models import Dashboard, Widget
-from backend.src.dashboard.schemas import WidgetIn
+from backend.src.dashboard.schemas import WidgetCreateSchema, WidgetUpdateSchema
 
 
 async def get_by_user_id(*, db_session: AsyncSession, user_id: int) -> Dashboard | None:
@@ -34,7 +34,9 @@ async def get_widget_by_uuid(*, db_session: AsyncSession, uuid: UUID) -> Widget 
     return result.scalars().one_or_none()
 
 
-async def create_widget(*, db_session: AsyncSession, dashboard_id: int, data: WidgetIn) -> Widget:
+async def create_widget(
+    *, db_session: AsyncSession, dashboard_id: int, data: WidgetCreateSchema
+) -> Widget:
     """Create new widget instance in db."""
 
     widget = Widget(
@@ -49,6 +51,23 @@ async def create_widget(*, db_session: AsyncSession, dashboard_id: int, data: Wi
     db_session.add(widget)
     await db_session.commit()
     await db_session.refresh(widget)
+    return widget
+
+
+async def update_widget(
+    *, db_session: AsyncSession, widget: Widget, data: WidgetUpdateSchema
+) -> Widget:
+    """Update existed widget instance in db."""
+    update_data = data.dict(exclude_unset=True)
+    if not update_data:
+        return widget
+
+    for field in update_data:
+        setattr(widget, field, update_data[field])
+
+    await db_session.commit()
+    await db_session.refresh(widget)
+
     return widget
 
 
