@@ -1,6 +1,6 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.auth.permission import IsAuthenticated
@@ -22,6 +22,7 @@ from .schemas import (
     WidgetCreateSchema,
     WidgetDoesNotFound,
     WidgetPartialUpdateSchema,
+    WidgetsBulkUpdateSchema,
     WidgetSchema,
     WidgetUpdateSchema,
 )
@@ -64,7 +65,7 @@ async def update_dashboard(
     dashboard: Dashboard = Depends(get_dashboard),
 ) -> Any:
     """Update existed widget."""
-    updated_dashboard = await dashboard_services.update(
+    updated_dashboard = await dashboard_services.update_dashboard(
         db_session=db_session, dashboard=dashboard, data=data
     )
 
@@ -89,7 +90,7 @@ async def update_dashboard_partial(
     dashboard: Dashboard = Depends(get_dashboard),
 ) -> Any:
     """Update existed widget."""
-    updated_dashboard = await dashboard_services.update(
+    updated_dashboard = await dashboard_services.update_dashboard(
         db_session=db_session, dashboard=dashboard, data=data
     )
 
@@ -139,10 +140,36 @@ async def add_widget(
         raise WeatherApiHttpException()
 
 
+@router.put("/widget/bulk-update", dependencies=[Depends(PermissionsDependency([IsAuthenticated]))])
+async def bulk_update_widgets(
+    data: WidgetsBulkUpdateSchema,
+    db_session: AsyncSession = Depends(get_db),
+    dashboard: Dashboard = Depends(get_dashboard),
+) -> Any:
+    """Bulk update widgets."""
+
+    data_uuids = {widget.updated_uuid for widget in data.widgets}
+    dashboard_widgets_uuids = {widget.uuid for widget in dashboard.widgets}
+
+    if not_existed_uuid := data_uuids - dashboard_widgets_uuids:
+        uuids_str = ", ".join([str(item) for item in not_existed_uuid])
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Dashboard doesn't have widgets with uuid {uuids_str}",
+        )
+
+    await dashboard_services.bulk_update_widgets(
+        db_session=db_session, dashboard_id=dashboard.id, data=data
+    )
+
+    return data
+
+
 @router.put(
     "/widget/{uuid}",
     response_model=WidgetSchema,
     dependencies=[Depends(PermissionsDependency([IsAuthenticated]))],
+    responses={404: {"model": WidgetDoesNotFound, "description": "Widget doesn't found."}},
 )
 async def update_widget(
     data: WidgetUpdateSchema,
@@ -166,6 +193,7 @@ async def update_widget(
     "/widget/{uuid}",
     response_model=WidgetSchema,
     dependencies=[Depends(PermissionsDependency([IsAuthenticated]))],
+    responses={404: {"model": WidgetDoesNotFound, "description": "Widget doesn't found."}},
 )
 async def update_widget_partial(
     data: WidgetPartialUpdateSchema,

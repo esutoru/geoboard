@@ -57,7 +57,7 @@ async def create(
     async with async_session() as session:
         user = await user_service.create(db_session=session, data=data)
         if user:
-            await dashboard_service.create(db_session=session, user_id=user.id)
+            await dashboard_service.create_dashboard(db_session=session, user_id=user.id)
             await session.commit()
             await session.refresh(user)
 

@@ -48,6 +48,14 @@ class WidgetPartialUpdateSchema(WidgetUpdateSchema):
     __annotations__ = convert_to_optional(WidgetUpdateSchema)
 
 
+class WidgetsBulkUpdateItemSchema(WidgetUpdateSchema):
+    updated_uuid: UUID = Field(..., alias="uuid")
+
+
+class WidgetsBulkUpdateSchema(BaseModel):
+    widgets: list[WidgetsBulkUpdateItemSchema]
+
+
 class LocationSchema(BaseModel):
     name: str
     region: str

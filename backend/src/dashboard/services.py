@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import delete, select
+from sqlalchemy import bindparam, delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -9,6 +9,7 @@ from backend.src.dashboard.models import Dashboard, Widget
 from backend.src.dashboard.schemas import (
     DashboardUpdateSchema,
     WidgetCreateSchema,
+    WidgetsBulkUpdateSchema,
     WidgetUpdateSchema,
 )
 
@@ -23,7 +24,7 @@ async def get_by_user_id(*, db_session: AsyncSession, user_id: int) -> Dashboard
     return result.scalars().one_or_none()
 
 
-async def create(*, db_session: AsyncSession, user_id: int) -> Dashboard:
+async def create_dashboard(*, db_session: AsyncSession, user_id: int) -> Dashboard:
     """Create new dashboard instance in db."""
     dashboard = Dashboard(location=settings.DEFAULT_DASHBOARD_LOCATION, user_id=user_id)
     db_session.add(dashboard)
@@ -32,7 +33,7 @@ async def create(*, db_session: AsyncSession, user_id: int) -> Dashboard:
     return dashboard
 
 
-async def update(
+async def update_dashboard(
     *, db_session: AsyncSession, dashboard: Dashboard, data: DashboardUpdateSchema
 ) -> Dashboard:
     """Update existed dashboard instance in db."""
@@ -90,6 +91,26 @@ async def update_widget(
     await db_session.refresh(widget)
 
     return widget
+
+
+async def bulk_update_widgets(
+    *, db_session: AsyncSession, dashboard_id: int, data: WidgetsBulkUpdateSchema
+) -> None:
+    bulk = (
+        update(Widget)
+        .where(Widget.uuid == bindparam("updated_uuid"), Widget.dashboard_id == dashboard_id)
+        .values(
+            {
+                "x": bindparam("x"),
+                "y": bindparam("y"),
+                "width": bindparam("width"),
+                "height": bindparam("height"),
+            }
+        )
+    )
+
+    await db_session.execute(bulk, data.dict()["widgets"])
+    await db_session.commit()
 
 
 async def delete_widget_by_uuid(*, db_session: AsyncSession, uuid: UUID) -> None:
