@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from pydantic.schema import UUID
 
 from backend.common.schema.partial import convert_to_optional
-from backend.src.dashboard.types import WidgetTypes
+from backend.src.dashboard.types import TemperatureScales, WidgetTypes
 
 
 class ExternalServiceNotAvailable(BaseModel):
@@ -106,3 +106,12 @@ class DashboardSchema(BaseModel):
     condition: DashboardConditionSchema
     forecast: list[DashboardDayForecastSchema]
     widgets: list[WidgetSchema]
+
+
+class DashboardUpdateSchema(BaseModel):
+    temperature_scale: TemperatureScales
+    location: str
+
+
+class DashboardPartialUpdateSchema(DashboardUpdateSchema):
+    __annotations__ = convert_to_optional(DashboardUpdateSchema)

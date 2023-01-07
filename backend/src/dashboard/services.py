@@ -6,7 +6,11 @@ from sqlalchemy.orm import selectinload
 
 from backend.src.config import settings
 from backend.src.dashboard.models import Dashboard, Widget
-from backend.src.dashboard.schemas import WidgetCreateSchema, WidgetUpdateSchema
+from backend.src.dashboard.schemas import (
+    DashboardUpdateSchema,
+    WidgetCreateSchema,
+    WidgetUpdateSchema,
+)
 
 
 async def get_by_user_id(*, db_session: AsyncSession, user_id: int) -> Dashboard | None:
@@ -25,6 +29,23 @@ async def create(*, db_session: AsyncSession, user_id: int) -> Dashboard:
     db_session.add(dashboard)
     await db_session.commit()
     await db_session.refresh(dashboard)
+    return dashboard
+
+
+async def update(
+    *, db_session: AsyncSession, dashboard: Dashboard, data: DashboardUpdateSchema
+) -> Dashboard:
+    """Update existed dashboard instance in db."""
+    update_data = data.dict(exclude_unset=True)
+    if not update_data:
+        return dashboard
+
+    for field in update_data:
+        setattr(dashboard, field, update_data[field])
+
+    await db_session.commit()
+    await db_session.refresh(dashboard)
+
     return dashboard
 
 

@@ -13,7 +13,9 @@ from .dependencies import get_dashboard, get_widget
 from .exceptions import WeatherApiHttpException
 from .models import Dashboard, Widget
 from .schemas import (
+    DashboardPartialUpdateSchema,
     DashboardSchema,
+    DashboardUpdateSchema,
     ExternalServiceNotAvailable,
     LocationSchema,
     SearchLocationIn,
@@ -40,12 +42,62 @@ router = APIRouter(
     response_model=DashboardSchema,
     dependencies=[Depends(PermissionsDependency([IsAuthenticated]))],
 )
-async def dashboard_detail(dashboard: Dashboard = Depends(get_dashboard)) -> Any:
+async def get_dashboard_deta(dashboard: Dashboard = Depends(get_dashboard)) -> Any:
     """Returns weather data for current dashboard settings."""
 
     try:
         return await weather_api.get_location_forecast(
             dashboard.location, dashboard.temperature_scale, dashboard.widgets
+        )
+    except WeatherApiException:
+        raise WeatherApiHttpException()
+
+
+@router.put(
+    "/",
+    response_model=DashboardSchema,
+    dependencies=[Depends(PermissionsDependency([IsAuthenticated]))],
+)
+async def update_dashboard(
+    data: DashboardUpdateSchema,
+    db_session: AsyncSession = Depends(get_db),
+    dashboard: Dashboard = Depends(get_dashboard),
+) -> Any:
+    """Update existed widget."""
+    updated_dashboard = await dashboard_services.update(
+        db_session=db_session, dashboard=dashboard, data=data
+    )
+
+    try:
+        return await weather_api.get_location_forecast(
+            updated_dashboard.location,
+            updated_dashboard.temperature_scale,
+            updated_dashboard.widgets,
+        )
+    except WeatherApiException:
+        raise WeatherApiHttpException()
+
+
+@router.patch(
+    "/",
+    response_model=DashboardSchema,
+    dependencies=[Depends(PermissionsDependency([IsAuthenticated]))],
+)
+async def update_dashboard_partial(
+    data: DashboardPartialUpdateSchema,
+    db_session: AsyncSession = Depends(get_db),
+    dashboard: Dashboard = Depends(get_dashboard),
+) -> Any:
+    """Update existed widget."""
+    updated_dashboard = await dashboard_services.update(
+        db_session=db_session, dashboard=dashboard, data=data
+    )
+
+    try:
+        return await weather_api.get_location_forecast(
+            updated_dashboard.location,
+            updated_dashboard.temperature_scale,
+            updated_dashboard.widgets,
         )
     except WeatherApiException:
         raise WeatherApiHttpException()
@@ -81,7 +133,10 @@ async def add_widget(
         db_session=db_session, dashboard_id=dashboard.id, data=data
     )
 
-    return await weather_api.get_widget_data(location, widget)
+    try:
+        return await weather_api.get_widget_data(location, widget)
+    except WeatherApiException:
+        raise WeatherApiHttpException()
 
 
 @router.put(
@@ -100,7 +155,11 @@ async def update_widget(
     updated_widget = await dashboard_services.update_widget(
         db_session=db_session, widget=widget, data=data
     )
-    return await weather_api.get_widget_data(location, updated_widget)
+
+    try:
+        return await weather_api.get_widget_data(location, updated_widget)
+    except WeatherApiException:
+        raise WeatherApiHttpException()
 
 
 @router.patch(
@@ -119,7 +178,11 @@ async def update_widget_partial(
     updated_widget = await dashboard_services.update_widget(
         db_session=db_session, widget=widget, data=data
     )
-    return await weather_api.get_widget_data(location, updated_widget)
+
+    try:
+        return await weather_api.get_widget_data(location, updated_widget)
+    except WeatherApiException:
+        raise WeatherApiHttpException()
 
 
 @router.delete(
